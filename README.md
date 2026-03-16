@@ -15,7 +15,8 @@ python -m venv .venv
 source .venv/bin/activate      # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 
-# Update .env if your Postgres credentials differ from the defaults
+# Create .env file in the root directory
+# Add your Postgres credentials to the .env file
 # DATABASE_URL=postgresql://postgres:postgres@localhost:5432/billing_system
 
 # Run
