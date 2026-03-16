@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% block title %}Billing System{% endblock %}</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Arial, sans-serif; font-size: 14px; background: #f5f5f5; color: #222; }
+    .container { max-width: 900px; margin: 30px auto; background: #fff; padding: 30px; border: 1px solid #ddd; }
+    h1 { font-size: 20px; text-align: center; margin-bottom: 24px; border-bottom: 1px solid #ddd; padding-bottom: 12px; }
+    h2 { font-size: 16px; margin: 20px 0 12px; }
+    nav { background: #333; padding: 10px 20px; display: flex; gap: 20px; }
+    nav a { color: #fff; text-decoration: none; font-size: 14px; }
+    nav a:hover { text-decoration: underline; }
+    label { display: inline-block; min-width: 160px; font-weight: bold; vertical-align: top; }
+    input[type=text], input[type=email], input[type=number] {
+      padding: 5px 8px; border: 1px solid #aaa; width: 200px;
+    }
+    input[type=number] { width: 90px; }
+    button { padding: 6px 16px; cursor: pointer; }
+    .btn-primary { background: #333; color: #fff; border: none; }
+    .btn-secondary { background: #fff; border: 1px solid #aaa; }
+    .btn-danger { background: #c00; color: #fff; border: none; }
+    .btn-sm { padding: 3px 10px; font-size: 12px; }
+    .error { color: #c00; background: #fee; border: 1px solid #c00; padding: 8px 12px; margin-bottom: 16px; }
+    .success { color: #060; background: #efe; border: 1px solid #060; padding: 8px 12px; margin-bottom: 16px; }
+    .form-row { margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+    .separator { border: none; border-top: 2px solid #333; margin: 24px 0; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { border: 1px solid #ccc; padding: 6px 10px; text-align: left; }
+    th { background: #eee; font-weight: bold; }
+    td.num { text-align: right; }
+    .summary-table { width: 400px; margin: 16px auto; }
+    .summary-table td { border: none; padding: 4px 8px; }
+    .summary-table td:last-child { text-align: right; font-weight: bold; }
+    .denom-grid { display: grid; grid-template-columns: 60px 100px; gap: 6px; align-items: center; }
+    .denom-val { font-weight: bold; text-align: right; }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="/billing">Billing Page</a>
+    <a href="/purchases">Purchase History</a>
+    <a href="/admin/products">Admin – Products</a>
+  </nav>
+  <div class="container">
+    {% block content %}{% endblock %}
+  </div>
+</body>
+</html>

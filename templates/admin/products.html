@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}Admin — Products{% endblock %}
+
+{% block content %}
+<h1>Admin — Products</h1>
+
+{% if msg %}
+  <div class="{{ 'error' if 'Error' in msg else 'success' }}">{{ msg }}</div>
+{% endif %}
+
+<!-- Seed button -->
+<div style="margin-bottom:16px; display:flex; justify-content:flex-end">
+  <form method="post" action="/admin/products/seed">
+    <button type="submit" class="btn-secondary">Seed Default Products</button>
+  </form>
+</div>
+
+<!-- Add product form -->
+<details style="margin-bottom:20px; border:1px solid #ccc; padding:12px">
+  <summary style="cursor:pointer; font-weight:bold">+ Add New Product</summary>
+  <form method="post" action="/admin/products/create" style="margin-top:12px">
+    <div class="form-row">
+      <label>Name</label>
+      <input type="text" name="name" placeholder="Product name" required style="width:240px"/>
+    </div>
+    <div class="form-row">
+      <label>Product Code</label>
+      <input type="text" name="product_code" placeholder="e.g. PROD001" required/>
+    </div>
+    <div class="form-row">
+      <label>Available Stocks</label>
+      <input type="number" name="available_stocks" value="0" min="0" required/>
+    </div>
+    <div class="form-row">
+      <label>Price Per Unit (₹)</label>
+      <input type="number" name="price_per_unit" step="0.01" min="0.01" required/>
+    </div>
+    <div class="form-row">
+      <label>Tax Percentage (%)</label>
+      <input type="number" name="tax_percentage" step="0.01" min="0" max="100" value="0" required/>
+    </div>
+    <div style="margin-top:10px">
+      <button type="submit" class="btn-primary">Add Product</button>
+    </div>
+  </form>
+</details>
+
+<!-- Product list -->
+{% if products %}
+  <table>
+    <thead>
+      <tr>
+        <th>Product Code</th>
+        <th>Name</th>
+        <th class="num">Stock</th>
+        <th class="num">Price / Unit (₹)</th>
+        <th class="num">Tax %</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in products %}
+      <tr>
+        <td>{{ p.product_code }}</td>
+        <td>{{ p.name }}</td>
+        <td class="num">{{ p.available_stocks }}</td>
+        <td class="num">{{ "%.2f"|format(p.price_per_unit) }}</td>
+        <td class="num">{{ "%.1f"|format(p.tax_percentage) }}%</td>
+        <td>
+          <a href="/admin/products/{{ p.id }}/edit" class="btn-secondary btn-sm"
+             style="padding:3px 10px; text-decoration:none; border:1px solid #aaa; display:inline-block">
+            Edit
+          </a>
+          &nbsp;
+          <form method="post" action="/admin/products/{{ p.id }}/delete" style="display:inline"
+                onsubmit="return confirm('Delete {{ p.name }}?')">
+            <button type="submit" class="btn-danger btn-sm">Delete</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <p style="color:#666">No products found. Use "Seed Default Products" to get started.</p>
+{% endif %}
+{% endblock %}

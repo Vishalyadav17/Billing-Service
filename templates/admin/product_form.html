@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Edit Product — {{ product.product_code }}{% endblock %}
+
+{% block content %}
+<h1>Edit Product — {{ product.product_code }}</h1>
+
+<form method="post" action="/admin/products/{{ product.id }}/update">
+  <div class="form-row">
+    <label>Product Code</label>
+    <span>{{ product.product_code }}</span>
+    <!-- code is immutable after creation -->
+  </div>
+  <div class="form-row">
+    <label>Name</label>
+    <input type="text" name="name" value="{{ product.name }}" required style="width:240px"/>
+  </div>
+  <div class="form-row">
+    <label>Available Stocks</label>
+    <input type="number" name="available_stocks" value="{{ product.available_stocks }}" min="0" required/>
+  </div>
+  <div class="form-row">
+    <label>Price Per Unit (₹)</label>
+    <input type="number" name="price_per_unit" value="{{ product.price_per_unit }}" step="0.01" min="0.01" required/>
+  </div>
+  <div class="form-row">
+    <label>Tax Percentage (%)</label>
+    <input type="number" name="tax_percentage" value="{{ product.tax_percentage }}" step="0.01" min="0" max="100" required/>
+  </div>
+  <div style="margin-top:16px; display:flex; gap:10px">
+    <button type="submit" class="btn-primary">Save Changes</button>
+    <a href="/admin/products" class="btn-secondary"
+       style="padding:6px 16px; text-decoration:none; border:1px solid #aaa; display:inline-block">
+      Cancel
+    </a>
+  </div>
+</form>
+{% endblock %}

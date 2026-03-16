@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block title %}Purchase #{{ bill.id }}{% endblock %}
+
+{% block content %}
+<h1>Purchase Detail — Bill #{{ bill.id }}</h1>
+
+<div class="form-row">
+  <label>Customer Email</label>
+  <span>{{ bill.customer_email }}</span>
+</div>
+<div class="form-row">
+  <label>Date</label>
+  <span>{{ bill.created_at | int | strftime }}</span>
+</div>
+
+<h2>Items Purchased</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Product ID</th>
+      <th>Product Name</th>
+      <th>Unit Price</th>
+      <th>Qty</th>
+      <th>Purchase Price</th>
+      <th>Tax %</th>
+      <th>Tax Payable</th>
+      <th>Total Price</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for item in bill.items %}
+    <tr>
+      <td>{{ item.product_code }}</td>
+      <td>{{ item.product_name }}</td>
+      <td class="num">{{ "%.2f"|format(item.unit_price) }}</td>
+      <td class="num">{{ item.quantity }}</td>
+      <td class="num">{{ "%.2f"|format(item.purchase_price) }}</td>
+      <td class="num">{{ "%.1f"|format(item.tax_percentage) }}%</td>
+      <td class="num">{{ "%.2f"|format(item.tax_payable) }}</td>
+      <td class="num">{{ "%.2f"|format(item.total_price) }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<!-- Summary -->
+<table class="summary-table" style="margin-top:20px">
+  <tr>
+    <td>Total price without tax:</td>
+    <td>{{ "%.2f"|format(bill.total_without_tax) }}</td>
+  </tr>
+  <tr>
+    <td>Total tax payable:</td>
+    <td>{{ "%.2f"|format(bill.total_tax) }}</td>
+  </tr>
+  <tr>
+    <td>Net price:</td>
+    <td>{{ "%.2f"|format(bill.net_price) }}</td>
+  </tr>
+  <tr>
+    <td>Rounded down net price:</td>
+    <td>{{ "%.2f"|format(bill.rounded_net_price) }}</td>
+  </tr>
+  <tr>
+    <td>Cash paid:</td>
+    <td>{{ "%.2f"|format(bill.cash_paid) }}</td>
+  </tr>
+  <tr>
+    <td>Balance returned to customer:</td>
+    <td>{{ "%.2f"|format(bill.balance) }}</td>
+  </tr>
+</table>
+
+{% if bill.denominations_given %}
+  <hr class="separator"/>
+  <h2 style="text-align:center">Balance Denomination Given:</h2>
+  <table class="summary-table">
+    {% for denom, count in bill.denominations_given.items()|sort(attribute='0', reverse=True) %}
+      {% if count > 0 %}
+      <tr>
+        <td>{{ denom }}:</td>
+        <td>{{ count }}</td>
+      </tr>
+      {% endif %}
+    {% endfor %}
+  </table>
+{% endif %}
+
+<div style="margin-top:20px">
+  <a href="javascript:history.back()" class="btn-secondary"
+     style="padding:6px 16px; display:inline-block; text-decoration:none; border:1px solid #aaa">
+    &larr; Back
+  </a>
+  <a href="/billing" style="margin-left:10px; padding:6px 16px; display:inline-block;
+     text-decoration:none; color:#fff; background:#333">
+    New Bill
+  </a>
+</div>
+{% endblock %}

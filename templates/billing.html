@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+{% block title %}Billing Page{% endblock %}
+
+{% block content %}
+<h1>Billing Page</h1>
+
+{% if error %}
+  <div class="error">{{ error }}</div>
+{% endif %}
+
+<!-- ===================== SECTION 1: BILLING FORM ===================== -->
+<div id="section-form" {% if bill %}style="display:none"{% endif %}>
+
+  <form method="post" action="/billing/generate" id="billing-form">
+
+    <!-- Customer Email -->
+    <div class="form-row">
+      <label for="customer_email">Customer Email</label>
+      <input type="email" id="customer_email" name="customer_email"
+             placeholder="Email ID" required style="width:240px"/>
+    </div>
+
+    <!-- Bill Section -->
+    <h2>
+      Bill section
+      <button type="button" class="btn-secondary btn-sm" onclick="addProductRow()" style="margin-left:12px">
+        Add New
+      </button>
+    </h2>
+
+    <div id="product-rows"></div>
+
+    <hr class="separator"/>
+
+    <!-- Denominations -->
+    <h2>Denominations</h2>
+    <p style="font-size:12px; color:#666; margin-bottom:10px">
+      Enter how many of each denomination the shop currently has available.
+    </p>
+    <div class="denom-grid">
+      {% for d in denominations %}
+        <span class="denom-val">{{ d }}</span>
+        <input type="number" name="denom_{{ d }}" value="0" min="0" placeholder="Count"/>
+      {% endfor %}
+    </div>
+
+    <hr class="separator"/>
+
+    <!-- Cash paid -->
+    <div class="form-row" style="margin-top:12px">
+      <label for="cash_paid">Cash paid by customer</label>
+      <input type="number" id="cash_paid" name="cash_paid" placeholder="Amount"
+             step="0.01" min="0" required style="width:160px"/>
+    </div>
+
+    <!-- Actions -->
+    <div style="text-align:right; margin-top:20px; display:flex; justify-content:flex-end; gap:10px">
+      <button type="reset" class="btn-secondary">Cancel</button>
+      <button type="submit" class="btn-primary">Generate Bill</button>
+    </div>
+
+  </form>
+</div><!-- /section-form -->
+
+
+<!-- ===================== SECTION 2: BILL RESULT ===================== -->
+{% if bill %}
+<div id="section-result">
+
+  <div class="form-row">
+    <label>Customer Email</label>
+    <span>{{ bill.customer_email }}</span>
+  </div>
+
+  <h2>Bill section</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Product ID</th>
+        <th>Unit Price</th>
+        <th>Qty</th>
+        <th>Purchase Price</th>
+        <th>Tax %</th>
+        <th>Tax Payable</th>
+        <th>Total Price</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in bill.items %}
+      <tr>
+        <td>{{ item.product_code }}</td>
+        <td class="num">{{ "%.2f"|format(item.unit_price) }}</td>
+        <td class="num">{{ item.quantity }}</td>
+        <td class="num">{{ "%.2f"|format(item.purchase_price) }}</td>
+        <td class="num">{{ "%.1f"|format(item.tax_percentage) }}%</td>
+        <td class="num">{{ "%.2f"|format(item.tax_payable) }}</td>
+        <td class="num">{{ "%.2f"|format(item.total_price) }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <!-- Summary -->
+  <table class="summary-table">
+    <tr>
+      <td>Total price without tax:</td>
+      <td>{{ "%.2f"|format(bill.total_without_tax) }}</td>
+    </tr>
+    <tr>
+      <td>Total tax payable:</td>
+      <td>{{ "%.2f"|format(bill.total_tax) }}</td>
+    </tr>
+    <tr>
+      <td>Net price of the purchased item:</td>
+      <td>{{ "%.2f"|format(bill.net_price) }}</td>
+    </tr>
+    <tr>
+      <td>Rounded down value of the purchased items net price:</td>
+      <td>{{ "%.2f"|format(bill.rounded_net_price) }}</td>
+    </tr>
+    <tr>
+      <td>Balance payable to the customer:</td>
+      <td>{{ "%.2f"|format(bill.balance) }}</td>
+    </tr>
+  </table>
+
+  <hr class="separator"/>
+
+  <!-- Balance Denomination -->
+  <h2 style="text-align:center">Balance Denomination:</h2>
+  {% if bill.denominations_given %}
+    <table class="summary-table">
+      {% for denom, count in bill.denominations_given.items()|sort(attribute='0', reverse=True) %}
+        {% if count > 0 %}
+        <tr>
+          <td>{{ denom }}:</td>
+          <td>{{ count }}</td>
+        </tr>
+        {% endif %}
+      {% endfor %}
+    </table>
+  {% else %}
+    <p style="text-align:center; color:#666">No denomination breakdown available.</p>
+  {% endif %}
+
+  <!-- New Bill button -->
+  <div style="text-align:center; margin-top:24px">
+    <a href="/billing" class="btn-primary" style="padding:7px 20px; display:inline-block; text-decoration:none; color:#fff; background:#333">
+      New Bill
+    </a>
+  </div>
+
+</div><!-- /section-result -->
+{% endif %}
+
+
+<script>
+  let rowIndex = 0;
+
+  function addProductRow() {
+    rowIndex++;
+    const container = document.getElementById('product-rows');
+    const row = document.createElement('div');
+    row.className = 'form-row';
+    row.id = 'row-' + rowIndex;
+    row.innerHTML =
+      '<label>Product ' + rowIndex + '</label>' +
+      '<input type="text" name="product_codes" placeholder="Product ID" required style="width:140px" />' +
+      '&nbsp;' +
+      '<input type="number" name="quantities" placeholder="Quantity" min="1" required style="width:80px" />' +
+      '&nbsp;' +
+      '<button type="button" class="btn-secondary btn-sm" onclick="removeRow(' + rowIndex + ')">Remove</button>';
+    container.appendChild(row);
+  }
+
+  function removeRow(idx) {
+    const row = document.getElementById('row-' + idx);
+    if (row) row.remove();
+  }
+
+  // Start with one row
+  window.addEventListener('DOMContentLoaded', function () {
+    {% if not bill %}
+      addProductRow();
+    {% endif %}
+  });
+</script>
+{% endblock %}
