@@ -51,6 +51,6 @@ App runs at http://localhost:8000. Tables are created automatically on first sta
 4. Balance = `cash_paid - rounded_net_price`.
 5. Stock is decremented on every bill generation. Billing is blocked if stock is insufficient.
 6. Unit price and tax % are snapshotted at bill time so purchase history stays accurate even if product prices change later.
-7. Email sending is implemented as a background task. The invoice details are logged to console. Actual SMTP delivery requires Gmail credentials (`SMTP_USER`, `SMTP_PASS` in `.env`) and is left as a configuration step, since hardcoding credentials is not appropriate for a submitted assignment.
+7. Invoice email is sent as a background task via Gmail SMTP. Set `SMTP_USER` and `SMTP_PASS` in `.env` to enable it (see Setup above). If not configured, the email step is skipped gracefully and the bill is still generated normally.
 8. Product codes are user-defined strings (e.g. `PROD001`) and are case-insensitive — auto-uppercased on save.
 9. No authentication is needed — this is an internal shop tool.
